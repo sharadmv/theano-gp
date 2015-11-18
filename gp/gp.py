@@ -5,7 +5,6 @@ from theano.tensor.shared_randomstreams import RandomStreams
 
 from theanify import theanify, Theanifiable
 
-theano.config.on_unused_input = 'ignore'
 from kernel import RBF
 
 class GaussianProcess(Theanifiable):
