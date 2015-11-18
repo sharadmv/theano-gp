@@ -10,11 +10,12 @@ from kernel import RBF
 
 class GaussianProcess(Theanifiable):
 
-    def __init__(self, kernel):
+    def __init__(self, kernel, noise=0.1):
         super(GaussianProcess, self).__init__()
         self.kernel = kernel
         self.rng = RandomStreams()
         self._observed = False
+        self.noise = noise
 
         self.Xtrain = theano.shared(np.zeros((0, 0)))
         self.ytrain = theano.shared(np.zeros(0))
@@ -60,6 +61,8 @@ class GaussianProcess(Theanifiable):
         return Kx_x_ - T.dot(Kx_x, T.dot(self.Kxx, Kx_x.T))
 
     def observe(self, X, y):
+        if not self._observed:
+            self.Xtrain.set_value(np.zeros((0, X.shape[1])))
         self._observed = True
         self._observe(X, y)
 
@@ -68,7 +71,9 @@ class GaussianProcess(Theanifiable):
         pass
 
     def observe_updates(self, X, y):
-        Kxx = T.nlinalg.matrix_inverse(self.kernel.distance(X, X))
+        X = T.concatenate([self.Xtrain, X])
+        y = T.concatenate([self.ytrain, y])
+        Kxx = T.nlinalg.matrix_inverse(self.kernel.distance(X, X) + T.eye(X.shape[0]) * self.noise)
         Kxxy = T.dot(Kxx, y)
         return [(self.Xtrain, X), (self.ytrain, y), (self.Kxx, Kxx),(self.Kxxy, Kxxy)]
 
@@ -99,6 +104,13 @@ class GaussianProcess(Theanifiable):
     @theanify(T.matrix('X'))
     def _predict_predictive(self, X):
         return self._mean_predictive(X), T.diag(self._cov_predictive(X))
+
+    def reset(self):
+        self.Xtrain.set_value(np.zeros((0, 0)))
+        self.ytrain.set_value(np.zeros(0))
+        self.Kxx.set_value(np.zeros((0, 0)))
+        self.Kxxy.set_value(np.zeros((0)))
+        self._observed = False
 
 if __name__ == "__main__":
     rbf = RBF(1.0)

@@ -29,4 +29,4 @@ class RBF(KernelFunction):
     @theanify(T.matrix('X1'), T.matrix('X2'))
     def distance(self, X1, X2):
         ed2 = self.euclidean_distance(X1, X2)
-        return T.exp(-ed2 / self.length_scale ** 2)
+        return T.exp(-ed2 / self.length_scale)
