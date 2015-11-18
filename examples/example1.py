@@ -11,17 +11,17 @@ if __name__ == "__main__":
     gp = GaussianProcess(kernel).compile()
 
     x = np.arange(-5, 5, 0.1)
-    plt.figure()
-    num_samples = 10
-    samples = gp.sample(x[:, np.newaxis], num_samples)
-    for i in xrange(num_samples):
-        plt.plot(x, samples[i])
-    plt.show()
+    # plt.figure()
+    # num_samples = 10
+    # samples = gp.sample(x[:, np.newaxis], num_samples)
+    # for i in xrange(num_samples):
+        # plt.plot(x, samples[i])
+    # plt.show()
 
     gp.observe([[1], [2]], [0, 1])
-    plt.figure()
-    num_samples = 10
-    samples = gp.sample(x[:, np.newaxis], num_samples)
-    for i in xrange(num_samples):
-        plt.plot(x, samples[i])
-    plt.show()
+    # plt.figure()
+    # num_samples = 10
+    # samples = gp.sample(x[:, np.newaxis], num_samples)
+    # for i in xrange(num_samples):
+        # plt.plot(x, samples[i])
+    # plt.show()

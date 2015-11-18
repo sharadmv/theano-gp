@@ -86,6 +86,20 @@ class GaussianProcess(Theanifiable):
     def _sample_predictive(self, X, size):
         return self.mvg(self._mean_predictive(X), self._cov_predictive(X), size)
 
+    def predict(self, X):
+        if self._observed:
+            return self._predict_predictive(X)
+        else:
+            return self._predict_prior(X)
+
+    @theanify(T.matrix('X'))
+    def _predict_prior(self, X):
+        return self._mean_prior(X), T.diag(self._cov_prior(X))
+
+    @theanify(T.matrix('X'))
+    def _predict_predictive(self, X):
+        return self._mean_predictive(X), T.diag(self._cov_predictive(X))
+
 if __name__ == "__main__":
     rbf = RBF(1.0)
     gp = GaussianProcess(rbf, 1)
